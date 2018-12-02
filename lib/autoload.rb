@@ -1,0 +1,7 @@
+require 'yaml'
+require_relative 'modules/text_messages'
+require_relative 'modules/validation'
+require_relative 'modules/console_helps'
+require_relative 'registration'
+require_relative 'db'
+require_relative 'play'
