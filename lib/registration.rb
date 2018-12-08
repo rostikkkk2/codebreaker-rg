@@ -1,9 +1,6 @@
-require_relative 'autoload'
-
 class Registration
   include Validation
   include ConsoleHelps
-  include TextMessages
 
   def initialize
     @user = {
@@ -14,23 +11,22 @@ class Registration
       hints_total: 0,
       hints_used: 0
     }
-    start_game_registration
   end
 
   def start_game_registration
-    show_info('Enter your name')
+    show_info(:write_name)
     name = gets.chomp.capitalize
     bye(name)
-    if is_valid_name(name)
+    if validate_length_range?(name, 3, 20) && validate_empty?(name) && validate_string?(name)
       @user[:name] = name
       return choose_difficulty
     end
-    show_info('It is wrong')
+    show_info(:unexpected_command)
     start_game_registration
   end
 
   def choose_difficulty
-    show_info(MESSAGE_CHOOSE_DIFFICULTY)
+    show_info(:message_coose_difficulty)
     difficulty = gets.chomp.capitalize
     bye(difficulty)
     case difficulty
@@ -38,7 +34,7 @@ class Registration
     when 'Medium' then whats_difficulty('Medium', 10, 1)
     when 'Hell' then whats_difficulty('Hell', 5, 1)
     else
-      show_info('It is wrong')
+      show_info(:unexpected_command)
       choose_difficulty
     end
   end
@@ -47,6 +43,7 @@ class Registration
     @user[:difficulty] = name_difficulty
     @user[:attempts_total] = attempts_total
     @user[:hints_total] = hints_total
-    Play.new(@user)
+    play_main = Play.new(@user)
+    play_main.play_game
   end
 end

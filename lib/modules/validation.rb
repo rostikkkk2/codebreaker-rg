@@ -1,13 +1,23 @@
 module Validation
-  def is_valid_name(name)
-    !name.empty? && name.is_a?(String) && name.length >= 3 && name.length <= 20
+  def validate_length_range?(val, begin_length, last_length)
+    val.length >= begin_length && val.length <= last_length
   end
 
-  def is_valid_guess_code(code)
-    right_nums = 0
-    code.split('').each do |num|
-      right_nums += 1 unless num.to_i >= 1 && num.to_i <= 6
+  def validate_empty?(val)
+    !val.empty?
+  end
+
+  def validate_string?(val)
+    val.is_a?(String)
+  end
+
+  def validate_value_right_range?(val, first_range, last_range)
+    val.split('').each do |num|
+      return false unless num.to_i >= first_range && num.to_i <= last_range
     end
-    code.length == 4 && right_nums == 0
+  end
+
+  def validate_right_length?(val, length)
+    val.length == length
   end
 end

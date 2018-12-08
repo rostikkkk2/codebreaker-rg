@@ -1,24 +1,14 @@
-require_relative 'modules/console_helps'
-
 class Db
   include ConsoleHelps
 
   PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
 
   def initialize(user_data)
-    @user = {
-      name: user_data[:name],
-      difficulty: user_data[:difficulty],
-      attempts_total: user_data[:attempts_total],
-      attempts_used: user_data[:attempts_used],
-      hints_total: user_data[:hints_total],
-      hints_used: user_data[:hints_used]
-    }
-    save
+    @user = user_data
   end
 
   def save
-    show_info("Do you want to save your progres? yes/no or nothing \n")
+    show_info(:ask_save_to_db)
     answer = gets.chomp.capitalize
     answer == 'Yes' ? add_data_to_db : return
   end

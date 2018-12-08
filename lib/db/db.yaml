@@ -1,31 +1,25 @@
 ---
 - :name: Rostik
-  :difficulty: Easy
-  :attempts_total: 15
+  :difficulty: Hell
+  :attempts_total: 5
   :attempts_used: 1
-  :hints_total: 2
+  :hints_total: 1
   :hints_used: 0
 - :name: Rostik
   :difficulty: Easy
   :attempts_total: 15
+  :attempts_used: 4
+  :hints_total: 2
+  :hints_used: 0
+- :name: Sdaflkj
+  :difficulty: Hell
+  :attempts_total: 5
   :attempts_used: 2
-  :hints_total: 2
-  :hints_used: 0
-- :name: Rostik
-  :difficulty: Easy
-  :attempts_total: 15
-  :attempts_used: 1
-  :hints_total: 2
+  :hints_total: 1
   :hints_used: 0
 - :name: Rostik
   :difficulty: Medium
   :attempts_total: 10
   :attempts_used: 1
   :hints_total: 1
-  :hints_used: 0
-- :name: Rsotik
-  :difficulty: Easy
-  :attempts_total: 15
-  :attempts_used: 1
-  :hints_total: 2
   :hints_used: 0
