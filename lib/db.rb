@@ -7,12 +7,6 @@ class Db
     @user = user_data
   end
 
-  def save
-    show_info(:ask_save_to_db)
-    answer = gets.chomp.capitalize
-    answer == 'Yes' ? add_data_to_db : return
-  end
-
   def add_data_to_db
     db_user = []
     data = YAML.load_file(PATH_TO_DB)
