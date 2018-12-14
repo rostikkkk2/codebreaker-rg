@@ -6,3 +6,4 @@ gem 'i18n'
 gem 'pry'
 gem 'rspec'
 gem 'rubocop'
+gem 'simplecov', require: false, group: :test

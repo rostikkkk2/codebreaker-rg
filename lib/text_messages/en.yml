@@ -31,7 +31,7 @@ en:
       \nChoose option one of several possible scenarios:
       \nstart, rules, stats, exit.\n "
   write_name: 'Enter your name'
-  message_coose_difficulty:
+  message_choose_difficulty:
     "\nChoose your difficulty:
     \nEasy - 15 attempts. 2 hints
     \nMedium - 10 attempts. 1 hint

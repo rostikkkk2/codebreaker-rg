@@ -1,26 +1,30 @@
+
 class Console
   include ConsoleHelps
   include Validation
 
+  attr_accessor :info_difficult, :user_name
+
   PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
   OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
   YES = 'Yes'.freeze
+  HINT = 'Hint'
 
   def initialize
     @info_difficult = nil
     @user_name = { name: nil }
+    @game = Game.new
   end
 
   def check_option
-    hello_message
+    show_info(:welcome_and_option)
     loop do
       option = gets.chomp.downcase
       case option
-      when OPTIONS[:start] then registration
+      when OPTIONS[:start] then return registration
       when OPTIONS[:rules] then show_rules
       when OPTIONS[:stats] then show_stats
-      when OPTIONS[:exit] then show_info(:goodbye)
-                               break
+      when OPTIONS[:exit] then return show_info(:goodbye)
       else
         show_info(:wrong_input_option)
       end
@@ -31,7 +35,6 @@ class Console
     ask_name
     ask_difficulty
     @user = Hash[*[@user_name, @info_difficult].map(&:to_a).flatten]
-    @game = Game.new
     play_game
   end
 
@@ -44,13 +47,17 @@ class Console
 
   def ask_name
     name = dafault_show_message_and_ask(:write_name)
-    return @user_name[:name] = name if validate_length_range?(name, 3, 20) && validate_string?(name)
+    return if valid_name?(name)
     show_info(:unexpected_command)
     ask_name
   end
 
+  def valid_name?(name)
+    @user_name[:name] = name if validate_length_range?(name, 3, 20) && validate_string?(name)
+  end
+
   def ask_difficulty
-    difficulty = dafault_show_message_and_ask(:message_coose_difficulty)
+    difficulty = dafault_show_message_and_ask(:message_choose_difficulty)
     @info_difficult = Difficult.new(difficulty).choose_difficulty
     return unless @info_difficult.nil?
     show_info(:unexpected_command)
@@ -58,16 +65,18 @@ class Console
   end
 
   def play_game
-    guess_code = dafault_show_message_and_ask(:message_guess_code)
-    check_hint if guess_code == 'Hint'
-    if @game.check_guess(guess_code)
-      result_compare = @game.compare_guess_and_secret_codes(guess_code)
-      show_info_without_i18(result_compare)
-      play_game unless check_win(result_compare)
-    else
-      show_info(:unexpected_command) if guess_code != 'Hint'
-      play_game
+    loop do
+      guess_code = dafault_show_message_and_ask(:message_guess_code)
+      check_hint if guess_code == HINT
+      return game_proccess(guess_code) if @game.valid_guess_code?(guess_code)
+      show_info(:unexpected_command) if guess_code != HINT
     end
+  end
+
+  def game_proccess(guess_code)
+    result_compare = @game.compare_guess_and_secret_codes(guess_code)
+    show_info_without_i18(result_compare)
+    play_game unless check_win(result_compare)
   end
 
   def show_hint
@@ -106,10 +115,6 @@ class Console
 
   def check_hint
     @user[:hints_used] != @user[:hints_total] ? show_hint : show_info(:used_all_hints)
-  end
-
-  def hello_message
-    show_info(:welcome_and_option)
   end
 
   def show_rules

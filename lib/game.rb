@@ -8,7 +8,7 @@ class Game
     @secret_code_for_hints = @secret_code.clone
   end
 
-  def check_guess(guess_code)
+  def valid_guess_code?(guess_code)
     validate_value_right_range?(guess_code, 1, 6) && validate_right_length?(guess_code, 4)
   end
 
