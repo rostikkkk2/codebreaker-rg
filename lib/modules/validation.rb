@@ -3,10 +3,6 @@ module Validation
     val.length >= begin_length && val.length <= last_length
   end
 
-  def validate_empty?(val)
-    !val.empty?
-  end
-
   def validate_string?(val)
     val.is_a?(String)
   end

@@ -1,4 +1,3 @@
-
 class Console
   include ConsoleHelps
   include Validation
@@ -8,7 +7,7 @@ class Console
   PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
   OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
   YES = 'Yes'.freeze
-  HINT = 'Hint'
+  HINT = 'Hint'.freeze
 
   def initialize
     @info_difficult = nil
@@ -48,6 +47,7 @@ class Console
   def ask_name
     name = dafault_show_message_and_ask(:write_name)
     return if valid_name?(name)
+
     show_info(:unexpected_command)
     ask_name
   end
@@ -60,6 +60,7 @@ class Console
     difficulty = dafault_show_message_and_ask(:message_choose_difficulty)
     @info_difficult = Difficult.new(difficulty).choose_difficulty
     return unless @info_difficult.nil?
+
     show_info(:unexpected_command)
     ask_difficulty
   end
@@ -69,6 +70,7 @@ class Console
       guess_code = dafault_show_message_and_ask(:message_guess_code)
       check_hint if guess_code == HINT
       return game_proccess(guess_code) if @game.valid_guess_code?(guess_code)
+
       show_info(:unexpected_command) if guess_code != HINT
     end
   end
@@ -84,22 +86,22 @@ class Console
     show_info_without_i18(@game.give_digit_hint)
   end
 
-  def check_win(compare_func)
-    compare_func == '++++' ? win : check_lose
+  def check_win(result_compare)
+    result_compare == '++++' ? win : check_lose
   end
 
   def win
     show_info_without_i18(I18n.t(:win) + "#{@game.secret_code.join} \n")
     save
-    restart?
+    restart
   end
 
   def save
     answer = dafault_show_message_and_ask(:ask_save_to_db)
-    answer == YES ? Db.new(@user).add_data_to_db : return
+    answer == YES ? Db.new.add_data_to_db(@user) : return
   end
 
-  def restart?
+  def restart
     answer = dafault_show_message_and_ask(:restart)
     Console.new.check_option if answer == YES
     exit
@@ -109,7 +111,7 @@ class Console
     @user[:attempts_used] += 1
     if @user[:attempts_used] == @user[:attempts_total]
       show_info_without_i18(I18n.t(:lose) + "#{@game.secret_code.join} \n")
-      restart?
+      restart
     end
   end
 

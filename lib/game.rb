@@ -1,7 +1,7 @@
 class Game
   include Validation
   include ConsoleHelps
-  attr_reader :secret_code
+  attr_reader :secret_code, :secret_code_for_hints
 
   def initialize
     @secret_code = generate_secrete_code
