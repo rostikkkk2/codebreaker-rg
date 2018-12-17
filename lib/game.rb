@@ -19,30 +19,26 @@ class Game
   end
 
   def compare_guess_and_secret_codes(code)
-    pluses = []
-    minuses = []
-    changed_s_code = @secret_code.clone
+    sign = ''
+    double_secret_code = @secret_code.clone
     code_arr = code.split('').map(&:to_i)
-    changed_code_arr = code_arr
+    double_guess_code = code_arr
+    code_arr.each_index do |index|
+      next unless code_arr[index] == @secret_code[index]
 
-    code_arr.each_index do |i|
-      next unless code_arr[i] == @secret_code[i]
-
-      pluses.push('+')
-      changed_s_code[i] = '+'
-      changed_code_arr[i] = '-'
+      double_secret_code[index], double_guess_code[index] = nil
+      sign += '+'
     end
-    changed_code_arr.each_index do |i|
-      changed_s_code.each_index do |j|
-        next unless changed_code_arr[i] == changed_s_code[j]
+    [double_secret_code, double_guess_code].each(&:compact!)
 
-        minuses.push('-')
-        changed_s_code[j] = '+'
-        changed_code_arr[i] = '-'
+    double_guess_code.each do |guess_digit|
+      if double_secret_code.include?(guess_digit)
+        double_secret_code[double_secret_code.find_index(guess_digit)] = nil
+        sign += '-'
       end
     end
     p @secret_code
-    (pluses + minuses).join('')
+    sign
   end
 
   def generate_secrete_code

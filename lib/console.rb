@@ -2,9 +2,8 @@ class Console
   include ConsoleHelps
   include Validation
 
-  attr_accessor :info_difficult, :user_name
+  attr_accessor :info_difficult, :user_name, :user
 
-  PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
   OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
   YES = 'Yes'.freeze
   HINT = 'Hint'.freeze
@@ -13,6 +12,7 @@ class Console
     @info_difficult = nil
     @user_name = { name: nil }
     @game = Game.new
+    @db = Db.new
   end
 
   def check_option
@@ -98,7 +98,7 @@ class Console
 
   def save
     answer = dafault_show_message_and_ask(:ask_save_to_db)
-    answer == YES ? Db.new.add_data_to_db(@user) : return
+    answer == YES ? @db.add_data_to_db(@user) : return
   end
 
   def restart
@@ -124,15 +124,23 @@ class Console
   end
 
   def show_stats
-    data = YAML.load_file(PATH_TO_DB)
+    data = @db.load if @db.file_exist?
     if !data
       show_info(:clear_stats)
     else
-      sort_data = data.sort_by { |user| [user[:attempts_total], user[:attempts_used], user[:hints_used]] }
-      sort_data.each do |user|
-        user.each do |key, value|
-          show_info_without_i18("#{key}: #{value} #{"\n" if key == :hints_used} ")
-        end
+      sort_data = sort_db_info(data)
+      show_db_info(sort_data)
+    end
+  end
+
+  def sort_db_info(data)
+    data.sort_by { |user| [user[:attempts_total], user[:attempts_used], user[:hints_used]] }
+  end
+
+  def show_db_info(sort_data)
+    sort_data.each do |user|
+      user.each do |key, value|
+        show_info_without_i18("#{key}: #{value} #{"\n" if key == :hints_used} ")
       end
     end
   end
