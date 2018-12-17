@@ -42,6 +42,6 @@ class Game
   end
 
   def generate_secrete_code
-    4.times.map { rand(1..6) }
+    Array.new(4) { rand(1..6) }
   end
 end

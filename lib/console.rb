@@ -7,6 +7,7 @@ class Console
   OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
   YES = 'Yes'.freeze
   HINT = 'Hint'.freeze
+  WIN = '++++'
 
   def initialize
     @info_difficult = nil
@@ -87,7 +88,7 @@ class Console
   end
 
   def check_win(result_compare)
-    result_compare == '++++' ? win : check_lose
+    result_compare == WIN ? win : check_lose
   end
 
   def win

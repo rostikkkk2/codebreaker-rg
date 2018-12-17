@@ -2,7 +2,7 @@ class Db
   include ConsoleHelps
 
   PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
-  attr_accessor :db_user
+  attr_reader :db_user
 
   def initialize
     @db_user = []
