@@ -7,7 +7,7 @@ class Console
   OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
   YES = 'Yes'.freeze
   HINT = 'Hint'.freeze
-  WIN = '++++'
+  WIN = '++++'.freeze
 
   def initialize
     @info_difficult = nil
