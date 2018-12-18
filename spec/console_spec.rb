@@ -2,6 +2,14 @@ RSpec.describe Console do
   let(:console) { described_class.new }
   let(:game) { Game.new }
   let(:db) { Db.new }
+  let(:hint) { 'Hint' }
+  let(:test_guess) { '1234' }
+  let(:lose) { '----' }
+  let(:win) { '++++' }
+  let(:yes) { 'Yes' }
+  let(:no) { 'No' }
+  let(:name) { 'Rostik' }
+  let(:easy) { 'Easy' }
   let(:test_user) { { name: 'Test', difficulty: 'Easy', attempts_total: 15, attempts_used: 2, hints_total: 2, hints_used: 0 } }
 
   context 'navigation' do
@@ -39,7 +47,7 @@ RSpec.describe Console do
     end
 
     it 'give error after enter name and difficulty' do
-      allow(console).to receive(:gets).and_return('start', '', 'Rositk', '', 'Easy')
+      allow(console).to receive(:gets).and_return(Console::OPTIONS[:start], '', name, '', easy)
       expect(console).to receive(:show_info).with(:welcome_and_option)
       expect(console).to receive(:show_info).with(:write_name).twice
       expect(console).to receive(:show_info).with(:unexpected_command).twice
@@ -61,13 +69,13 @@ RSpec.describe Console do
 
     it 'show hint' do
       allow_any_instance_of(described_class).to receive(:loop).and_yield
-      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).with(:message_guess_code).and_return('Hint')
+      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).with(:message_guess_code).and_return(hint)
       expect_any_instance_of(described_class).to receive(:check_hint).once
     end
 
     it 'check guess' do
       allow_any_instance_of(described_class).to receive(:loop).and_yield
-      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).with(:message_guess_code).and_return('1234')
+      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).with(:message_guess_code).and_return(test_guess)
       allow_any_instance_of(Game).to receive(:valid_guess_code?).and_return(true)
       expect_any_instance_of(described_class).to receive(:game_proccess).once
     end
@@ -80,19 +88,19 @@ RSpec.describe Console do
   end
 
   describe '#game_proccess' do
-    after { console.game_proccess('1234') }
+    after { console.game_proccess(test_guess) }
 
     it 'return play_game' do
-      allow_any_instance_of(Game).to receive(:compare_guess_and_secret_codes).and_return('----')
-      expect_any_instance_of(described_class).to receive(:show_info_without_i18).with('----')
-      expect_any_instance_of(described_class).to receive(:check_win).with('----').and_return(false)
+      allow_any_instance_of(Game).to receive(:compare_guess_and_secret_codes).and_return(lose)
+      expect_any_instance_of(described_class).to receive(:show_info_without_i18).with(lose)
+      expect_any_instance_of(described_class).to receive(:check_win).with(lose).and_return(false)
       expect_any_instance_of(described_class).to receive(:play_game)
     end
 
     it 'return check_win' do
-      allow_any_instance_of(Game).to receive(:compare_guess_and_secret_codes).and_return('++++')
-      expect_any_instance_of(described_class).to receive(:show_info_without_i18).with('++++')
-      expect_any_instance_of(described_class).to receive(:check_win).with('++++').and_return(true)
+      allow_any_instance_of(Game).to receive(:compare_guess_and_secret_codes).and_return(win)
+      expect_any_instance_of(described_class).to receive(:show_info_without_i18).with(win)
+      expect_any_instance_of(described_class).to receive(:check_win).with(win).and_return(true)
       expect_any_instance_of(described_class).not_to receive(:play_game)
     end
   end
@@ -131,12 +139,12 @@ RSpec.describe Console do
   describe '#check_win' do
     it 'return win' do
       expect_any_instance_of(described_class).to receive(:win)
-      described_class.new.check_win('++++')
+      described_class.new.check_win(win)
     end
 
     it 'return check_lose' do
       expect_any_instance_of(described_class).to receive(:check_lose)
-      described_class.new.check_win('----')
+      described_class.new.check_win(lose)
     end
   end
 
@@ -152,13 +160,13 @@ RSpec.describe Console do
 
   describe '#save' do
     it 'save to db' do
-      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).and_return('Yes')
+      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).and_return(yes)
       allow_any_instance_of(Db).to receive(:add_data_to_db)
       subject.save
     end
 
     it 'do not save' do
-      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).and_return('No')
+      allow_any_instance_of(described_class).to receive(:dafault_show_message_and_ask).and_return(no)
       expect_any_instance_of(Db).not_to receive(:add_data_to_db)
       subject.save
     end

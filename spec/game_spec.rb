@@ -1,5 +1,6 @@
 RSpec.describe Game do
   let(:game) { described_class.new }
+  let(:yes) { 'yes' }
 
   describe '#compare_guess_and_secret_codes' do
     [
@@ -28,7 +29,7 @@ RSpec.describe Game do
 
   describe '#restart' do
     it 'go to restart' do
-      allow_any_instance_of(Console).to receive(:dafault_show_message_and_ask).and_return('Yes')
+      allow_any_instance_of(Console).to receive(:dafault_show_message_and_ask).and_return(yes)
       allow_any_instance_of(Console).to receive(:check_option)
       Console.new.restart
     end
