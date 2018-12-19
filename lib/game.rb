@@ -12,19 +12,19 @@ class Game
   end
 
   def valid_guess_code?(guess_code)
-    validate_value_in_right_range?(guess_code, MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && validate_right_length?(guess_code, LENGTH_GUESS_CODE)
+    valid_value_in_range?(guess_code, MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && valid_length?(guess_code, LENGTH_GUESS_CODE)
   end
 
   def give_digit_hint
     @secret_code_for_hints.pop
   end
 
-  def compare_guess_and_secret_codes(code)
+  def compare_guess_and_secret_codes(guess_code)
     @result_signs = ''
     double_secret_code = @secret_code.clone
-    code_arr = code.split('').map(&:to_i)
+    code_arr = guess_code.split('').map(&:to_i)
     double_guess_code = code_arr
-    
+
     check_same_index(code_arr, double_secret_code, double_guess_code)
     [double_secret_code, double_guess_code].each(&:compact!)
     check_different_index(double_guess_code, double_secret_code)
@@ -34,6 +34,7 @@ class Game
   def check_same_index(code_arr, double_secret_code, double_guess_code)
     code_arr.each_index do |index|
       next unless code_arr[index] == @secret_code[index]
+
       double_secret_code[index], double_guess_code[index] = nil
       @result_signs += '+'
     end

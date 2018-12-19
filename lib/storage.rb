@@ -1,5 +1,4 @@
 class Storage
-
   attr_reader :db_user
   PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
 
@@ -26,5 +25,4 @@ class Storage
     db_file.write(@db_user.to_yaml)
     db_file.close
   end
-
 end

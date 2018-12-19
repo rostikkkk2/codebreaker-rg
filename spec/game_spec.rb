@@ -28,7 +28,7 @@ RSpec.describe Game do
 
   describe '#restart' do
     it 'go to restart' do
-      allow_any_instance_of(Console).to receive(:dafault_show_message_and_ask).and_return(yes)
+      allow_any_instance_of(Console).to receive(:show_message_and_input).and_return(yes)
       allow_any_instance_of(Console).to receive(:check_option)
       Console.new.restart
     end

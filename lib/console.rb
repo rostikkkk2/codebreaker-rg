@@ -10,7 +10,7 @@ class Console
   WIN = '++++'.freeze
   MIN_LENGTH_NAME = 3
   MAX_LENGTH_NAME = 20
-  EXIT = 'Exit'
+  EXIT = 'Exit'.freeze
 
   def initialize
     @user_name = {}
@@ -34,7 +34,7 @@ class Console
   def registration
     ask_name
     ask_difficulty
-    @user = {**@user_name, **@info_difficulty, attempts_used: 0, hints_used: 0}
+    @user = { **@user_name, **@info_difficulty, attempts_used: 0, hints_used: 0 }
     play_game
   end
 
@@ -54,7 +54,7 @@ class Console
   end
 
   def valid_name?(name)
-     validate_length_range?(name, MIN_LENGTH_NAME, MAX_LENGTH_NAME) && validate_string?(name)
+    validate_length_range?(name, MIN_LENGTH_NAME, MAX_LENGTH_NAME) && validate_string?(name)
   end
 
   def ask_difficulty
@@ -108,6 +108,7 @@ class Console
   def check_lose
     @user[:attempts_used] += 1
     return if @user[:attempts_used] != @user[:attempts_total]
+
     show_info(:lose)
     restart
   end
