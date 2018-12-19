@@ -39,8 +39,8 @@ en:
   message_guess_code: "guess of secret code! You can take hint or exit\n "
   unexpected_command: 'Unexpected command'
   restart: 'Do you want to restart game?'
-  lose: "You lose \nSecret_code is: "
-  win: "You win \nSecret_code is: "
+  lose: "You lose \n"
+  win: "You win \n"
   used_all_hints: 'You used all hints'
   clear_stats: 'Statistic is empty'
   ask_save_to_db: "Do you want to save your progres? yes/no or nothing \n"

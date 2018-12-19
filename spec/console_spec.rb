@@ -1,7 +1,7 @@
 RSpec.describe Console do
   let(:console) { described_class.new }
   let(:game) { Game.new }
-  let(:db) { Db.new }
+  let(:db) { Storage.new }
   let(:hint) { 'Hint' }
   let(:test_guess) { '1234' }
   let(:lose) { '----' }

@@ -1,5 +1,4 @@
 RSpec.describe Game do
-  let(:game) { described_class.new }
   let(:yes) { 'yes' }
 
   describe '#compare_guess_and_secret_codes' do

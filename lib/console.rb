@@ -1,30 +1,30 @@
 class Console
-  include ConsoleHelps
-  include Validation
+  include ConsoleHelpers
+  include Validator
 
   attr_accessor :info_difficult, :user_name, :user
 
-  OPTIONS = { start: 'start', rules: 'rules', stats: 'stats', exit: 'exit' }.freeze
-  YES = 'Yes'.freeze
+  OPTIONS = { start: 'Start', rules: 'Rules', stats: 'Stats', exit: 'Exit' }.freeze
+  AGREE_ANSWER = 'Yes'.freeze
   HINT = 'Hint'.freeze
   WIN = '++++'.freeze
+  MIN_LENGTH_NAME = 3
+  MAX_LENGTH_NAME = 20
+  EXIT = 'Exit'
 
   def initialize
-    @info_difficult = nil
-    @user_name = { name: nil }
+    @user_name = {}
     @game = Game.new
-    @db = Db.new
+    @db = Storage.new
   end
 
   def check_option
     show_info(:welcome_and_option)
     loop do
-      option = gets.chomp.downcase
-      case option
+      case show_message_and_input
       when OPTIONS[:start] then return registration
       when OPTIONS[:rules] then show_rules
       when OPTIONS[:stats] then show_stats
-      when OPTIONS[:exit] then return show_info(:goodbye)
       else
         show_info(:wrong_input_option)
       end
@@ -34,11 +34,11 @@ class Console
   def registration
     ask_name
     ask_difficulty
-    @user = Hash[*[@user_name, @info_difficult].map(&:to_a).flatten]
+    @user = {**@user_name, **@info_difficulty, attempts_used: 0, hints_used: 0}
     play_game
   end
 
-  def dafault_show_message_and_ask(message)
+  def show_message_and_input(message = nil)
     show_info(message)
     value = gets.chomp.capitalize
     bye(value)
@@ -46,21 +46,21 @@ class Console
   end
 
   def ask_name
-    name = dafault_show_message_and_ask(:write_name)
-    return if valid_name?(name)
+    name = show_message_and_input(:write_name)
+    return @user_name[:name] = name if valid_name?(name)
 
     show_info(:unexpected_command)
     ask_name
   end
 
   def valid_name?(name)
-    @user_name[:name] = name if validate_length_range?(name, 3, 20) && validate_string?(name)
+     validate_length_range?(name, MIN_LENGTH_NAME, MAX_LENGTH_NAME) && validate_string?(name)
   end
 
   def ask_difficulty
-    difficulty = dafault_show_message_and_ask(:message_choose_difficulty)
-    @info_difficult = Difficult.new(difficulty).choose_difficulty
-    return unless @info_difficult.nil?
+    difficulty = show_message_and_input(:message_choose_difficulty)
+    @info_difficulty = Difficulty.new(difficulty).choose_difficulty
+    return if @info_difficulty
 
     show_info(:unexpected_command)
     ask_difficulty
@@ -68,7 +68,7 @@ class Console
 
   def play_game
     loop do
-      guess_code = dafault_show_message_and_ask(:message_guess_code)
+      guess_code = show_message_and_input(:message_guess_code)
       check_hint if guess_code == HINT
       return game_proccess(guess_code) if @game.valid_guess_code?(guess_code)
 
@@ -77,14 +77,13 @@ class Console
   end
 
   def game_proccess(guess_code)
-    result_compare = @game.compare_guess_and_secret_codes(guess_code)
-    show_info_without_i18(result_compare)
+    puts result_compare = @game.compare_guess_and_secret_codes(guess_code)
     play_game unless check_win(result_compare)
   end
 
   def show_hint
     @user[:hints_used] += 1
-    show_info_without_i18(@game.give_digit_hint)
+    puts @game.give_digit_hint
   end
 
   def check_win(result_compare)
@@ -92,28 +91,25 @@ class Console
   end
 
   def win
-    show_info_without_i18(I18n.t(:win) + "#{@game.secret_code.join} \n")
+    show_info(:win)
     save
     restart
   end
 
   def save
-    answer = dafault_show_message_and_ask(:ask_save_to_db)
-    answer == YES ? @db.add_data_to_db(@user) : return
+    @db.add_data_to_db(@user) if show_message_and_input(:ask_save_to_db) == AGREE_ANSWER
   end
 
   def restart
-    answer = dafault_show_message_and_ask(:restart)
-    Console.new.check_option if answer == YES
-    exit
+    Console.new.check_option if show_message_and_input(:restart) == AGREE_ANSWER
+    bye(EXIT)
   end
 
   def check_lose
     @user[:attempts_used] += 1
-    if @user[:attempts_used] == @user[:attempts_total]
-      show_info_without_i18(I18n.t(:lose) + "#{@game.secret_code.join} \n")
-      restart
-    end
+    return if @user[:attempts_used] != @user[:attempts_total]
+    show_info(:lose)
+    restart
   end
 
   def check_hint
@@ -126,11 +122,11 @@ class Console
 
   def show_stats
     data = @db.load if @db.file_exist?
-    if !data
-      show_info(:clear_stats)
-    else
+    if data
       sort_data = sort_db_info(data)
       show_db_info(sort_data)
+    else
+      show_info(:clear_stats)
     end
   end
 
@@ -141,7 +137,7 @@ class Console
   def show_db_info(sort_data)
     sort_data.each do |user|
       user.each do |key, value|
-        show_info_without_i18("#{key}: #{value} #{"\n" if key == :hints_used} ")
+        puts "#{key}: #{value} #{"\n" if key == :hints_used} "
       end
     end
   end

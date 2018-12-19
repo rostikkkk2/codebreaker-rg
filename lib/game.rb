@@ -1,47 +1,55 @@
 class Game
-  include Validation
-  include ConsoleHelps
+  include Validator
   attr_reader :secret_code, :secret_code_for_hints
+
+  LENGTH_GUESS_CODE = 4
+  MIN_GUESS_DIGIT = 1
+  MAX_GUESS_DIGIT = 6
 
   def initialize
     @secret_code = generate_secrete_code
-    @secret_code_for_hints = @secret_code.clone
+    @secret_code_for_hints = @secret_code.clone.shuffle
   end
 
   def valid_guess_code?(guess_code)
-    validate_value_right_range?(guess_code, 1, 6) && validate_right_length?(guess_code, 4)
+    validate_value_in_right_range?(guess_code, MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && validate_right_length?(guess_code, LENGTH_GUESS_CODE)
   end
 
   def give_digit_hint
-    rand_elem = @secret_code_for_hints.sample
-    @secret_code_for_hints.delete_at(@secret_code_for_hints.index(rand_elem))
-    rand_elem
+    @secret_code_for_hints.pop
   end
 
   def compare_guess_and_secret_codes(code)
-    sign = ''
+    @result_signs = ''
     double_secret_code = @secret_code.clone
     code_arr = code.split('').map(&:to_i)
     double_guess_code = code_arr
+    
+    check_same_index(code_arr, double_secret_code, double_guess_code)
+    [double_secret_code, double_guess_code].each(&:compact!)
+    check_different_index(double_guess_code, double_secret_code)
+    @result_signs
+  end
+
+  def check_same_index(code_arr, double_secret_code, double_guess_code)
     code_arr.each_index do |index|
       next unless code_arr[index] == @secret_code[index]
-
       double_secret_code[index], double_guess_code[index] = nil
-      sign += '+'
+      @result_signs += '+'
     end
-    [double_secret_code, double_guess_code].each(&:compact!)
+  end
 
+  def check_different_index(double_guess_code, double_secret_code)
     double_guess_code.each do |guess_digit|
       if double_secret_code.include?(guess_digit)
         double_secret_code[double_secret_code.find_index(guess_digit)] = nil
-        sign += '-'
+        @result_signs += '-'
       end
     end
     p @secret_code
-    sign
   end
 
   def generate_secrete_code
-    Array.new(4) { rand(1..6) }
+    Array.new(LENGTH_GUESS_CODE) { rand(MIN_GUESS_DIGIT..MAX_GUESS_DIGIT) }
   end
 end

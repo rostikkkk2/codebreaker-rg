@@ -1,21 +1,24 @@
-class Db
-  include ConsoleHelps
+class Storage
 
-  PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
   attr_reader :db_user
+  PATH_TO_DB = File.dirname(__FILE__) + '/db/db.yaml'
 
   def initialize
     @db_user = []
   end
 
-  def load
-    YAML.load_file(PATH_TO_DB)
-  end
-
   def add_data_to_db(user)
     data = load if file_exist?
-    !data ? @db_user.push(user) : @db_user = data.push(user)
+    data ? @db_user = data.push(user) : @db_user.push(user)
     write_to_db
+  end
+
+  def file_exist?
+    File.exist?(PATH_TO_DB)
+  end
+
+  def load
+    YAML.load_file(PATH_TO_DB)
   end
 
   def write_to_db
@@ -24,7 +27,4 @@ class Db
     db_file.close
   end
 
-  def file_exist?
-    File.exist?(PATH_TO_DB)
-  end
 end
