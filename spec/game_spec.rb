@@ -1,5 +1,5 @@
 RSpec.describe Game do
-  let(:yes) { 'yes' }
+  let(:agree_command) { 'yes' }
 
   describe '#compare_guess_and_secret_codes' do
     [
@@ -17,6 +17,7 @@ RSpec.describe Game do
       [[1, 2, 3, 4], '4255', '+-'],
       [[1, 2, 3, 4], '1524', '++-'],
       [[1, 2, 3, 4], '5431', '+--'],
+      [[1, 2, 3, 4], '2134', '++--'],
       [[1, 2, 3, 4], '6666', '']
     ].each do |item|
       it "return #{item[2]} if code is - #{item[0]}, guess_code is #{item[1]}" do
@@ -28,9 +29,9 @@ RSpec.describe Game do
 
   describe '#restart' do
     it 'go to restart' do
-      allow_any_instance_of(Console).to receive(:show_message_and_input).and_return(yes)
+      allow_any_instance_of(Console).to receive(:show_message_and_input).and_return(agree_command)
       allow_any_instance_of(Console).to receive(:check_option)
-      Console.new.restart
+      Console.new.send(:restart)
     end
   end
 end

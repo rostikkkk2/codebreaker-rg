@@ -31,6 +31,8 @@ class Console
     end
   end
 
+  private
+
   def registration
     ask_name
     ask_difficulty

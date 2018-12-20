@@ -9,7 +9,7 @@ module Validator
 
   def valid_value_in_range?(value, first_range, last_range)
     value.split('').each do |num|
-      return false unless num.to_i >= first_range && num.to_i <= last_range
+      return false unless num.to_i.between?(first_range, last_range)
     end
   end
 

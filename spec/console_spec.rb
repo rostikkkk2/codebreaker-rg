@@ -1,14 +1,15 @@
 RSpec.describe Console do
   let(:game) { Game.new }
-  let(:db) { Storage.new }
   let(:hint) { 'Hint' }
   let(:test_guess) { '1234' }
   let(:lose) { '----' }
   let(:win) { '++++' }
-  let(:yes) { 'Yes' }
-  let(:no) { 'No' }
+  let(:agree_command) { 'Yes' }
+  let(:disagree_command) { 'No' }
   let(:name) { 'Rostik' }
   let(:easy) { 'Easy' }
+  let(:medium) { 'Medium' }
+  let(:hell) { 'Hell' }
   let(:test_user) do
     { name: 'Test',
       difficulty: 'Easy',
@@ -62,17 +63,35 @@ RSpec.describe Console do
       expect(subject).to receive(:play_game)
       subject.check_option
     end
+
+    it 'enter difficulty medium' do
+      allow(subject).to receive(:show_info).with(:welcome_and_option)
+      allow(subject).to receive(:show_message_and_input).and_return(Console::OPTIONS[:start])
+      allow(subject).to receive(:show_message_and_input).with(:write_name).and_return(name)
+      expect(subject).to receive(:show_message_and_input).with(:message_choose_difficulty).and_return(medium)
+      expect(subject).to receive(:play_game)
+      subject.check_option
+    end
+
+    it 'enter difficulty hell' do
+      allow(subject).to receive(:show_info).with(:welcome_and_option)
+      allow(subject).to receive(:show_message_and_input).and_return(Console::OPTIONS[:start])
+      allow(subject).to receive(:show_message_and_input).with(:write_name).and_return(name)
+      expect(subject).to receive(:show_message_and_input).with(:message_choose_difficulty).and_return(hell)
+      expect(subject).to receive(:play_game)
+      subject.check_option
+    end
   end
 
   describe '#show_rules' do
     it 'return rules' do
       expect(subject).to receive(:show_info)
-      subject.show_rules
+      subject.send(:show_rules)
     end
   end
 
   describe '#play_game' do
-    after { subject.play_game }
+    after { subject.send(:play_game) }
 
     it 'show hint' do
       allow(subject).to receive(:loop).and_yield
@@ -95,7 +114,7 @@ RSpec.describe Console do
   end
 
   describe '#game_proccess' do
-    after { subject.game_proccess(test_guess) }
+    after { subject.send(:game_proccess, test_guess) }
 
     it 'return play_game' do
       allow_any_instance_of(Game).to receive(:compare_guess_and_secret_codes).and_return(lose)
@@ -114,13 +133,13 @@ RSpec.describe Console do
     it 'show hint' do
       subject.instance_variable_set(:@user, hints_used: 0, hints_total: 2)
       expect(subject).to receive(:show_hint)
-      subject.check_hint
+      subject.send(:check_hint)
     end
 
     it 'do not show hint' do
       subject.instance_variable_set(:@user, hints_used: 2, hints_total: 2)
       expect(subject).to receive(:show_info)
-      subject.check_hint
+      subject.send(:check_hint)
     end
   end
 
@@ -128,7 +147,7 @@ RSpec.describe Console do
     it 'show hint' do
       subject.instance_variable_set(:@user, hints_used: 1)
       expect(subject).to receive(:puts).and_return(Game.new.give_digit_hint)
-      subject.show_hint
+      subject.send(:show_hint)
     end
   end
 
@@ -137,19 +156,19 @@ RSpec.describe Console do
       subject.instance_variable_set(:@user, attempts_used: 1, attempts_total: 2)
       expect(subject).to receive(:show_info)
       expect(subject).to receive(:restart)
-      subject.check_lose
+      subject.send(:check_lose)
     end
   end
 
   describe '#check_win' do
     it 'return win' do
       expect(subject).to receive(:win)
-      subject.check_win(win)
+      subject.send(:check_win, win)
     end
 
     it 'return check_lose' do
       expect(subject).to receive(:check_lose)
-      subject.check_win(lose)
+      subject.send(:check_win, lose)
     end
   end
 
@@ -158,27 +177,27 @@ RSpec.describe Console do
       allow(subject).to receive(:show_info)
       allow(subject).to receive(:save)
       expect(subject).to receive(:restart)
-      subject.win
+      subject.send(:win)
     end
   end
 
   describe '#show_db_info' do
     it 'show message and input' do
-      subject.show_db_info(test_user)
+      subject.send(:show_db_info, test_user)
     end
   end
 
   describe '#save' do
     it 'save to db' do
-      allow(subject).to receive(:show_message_and_input).and_return(yes)
-      allow_any_instance_of(Storage).to receive(:add_data_to_db)
-      subject.save
+      allow(subject).to receive(:show_message_and_input).and_return(agree_command)
+      expect_any_instance_of(Storage).to receive(:add_data_to_db)
+      subject.send(:save)
     end
 
     it 'do not save' do
-      allow_any_instance_of(described_class).to receive(:show_message_and_input).and_return(no)
+      allow_any_instance_of(described_class).to receive(:show_message_and_input).and_return(disagree_command)
       expect_any_instance_of(Storage).not_to receive(:add_data_to_db)
-      subject.save
+      subject.send(:save)
     end
   end
 
@@ -186,7 +205,7 @@ RSpec.describe Console do
     it 'stats clear' do
       allow_any_instance_of(Storage).to receive(:load).and_return(false)
       expect(subject).to receive(:show_info)
-      subject.show_stats
+      subject.send(:show_stats)
     end
 
     it 'show stats' do
@@ -194,7 +213,7 @@ RSpec.describe Console do
       allow_any_instance_of(Storage).to receive(:load).and_return(true)
       expect(subject).to receive(:sort_db_info)
       expect(subject).to receive(:show_db_info)
-      subject.show_stats
+      subject.send(:show_stats)
     end
   end
 
@@ -203,7 +222,7 @@ RSpec.describe Console do
       allow(subject).to receive(:show_info)
       allow(subject).to receive(:gets).and_return('')
       expect(subject).to receive(:bye).and_return('')
-      subject.show_message_and_input('')
+      subject.send(:show_message_and_input, '')
     end
   end
 end
