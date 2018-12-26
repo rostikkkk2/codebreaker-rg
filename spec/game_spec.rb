@@ -31,7 +31,7 @@ RSpec.describe Game do
     it 'go to restart' do
       allow_any_instance_of(Console).to receive(:show_message_and_input).and_return(agree_command)
       allow_any_instance_of(Console).to receive(:check_option)
-      Console.new.send(:restart)
+      Console.new.send(:ask_restart)
     end
   end
 end

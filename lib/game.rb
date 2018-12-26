@@ -31,6 +31,10 @@ class Game
     @result_signs
   end
 
+  def restart
+    return Console.new.check_option
+  end
+
   private
 
   def check_same_index(code_arr, double_secret_code, double_guess_code)

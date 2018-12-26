@@ -14,8 +14,8 @@ class Console
 
   def initialize
     @user_name = {}
-    @game = Game.new
     @db = Storage.new
+    @game = Game.new
   end
 
   def check_option
@@ -49,7 +49,7 @@ class Console
 
   def ask_name
     name = show_message_and_input(:write_name)
-    return @user_name[:name] = name if valid_name?(name)
+    return user_name[:name] = name if valid_name?(name)
 
     show_info(:unexpected_command)
     ask_name
@@ -84,7 +84,7 @@ class Console
   end
 
   def show_hint
-    @user[:hints_used] += 1
+    user[:hints_used] += 1
     puts @game.give_digit_hint
   end
 
@@ -95,28 +95,28 @@ class Console
   def win
     show_info(:win)
     save
-    restart
+    ask_restart
   end
 
-  def save
-    @db.add_data_to_db(@user) if show_message_and_input(:ask_save_to_db) == AGREE_ANSWER
-  end
-
-  def restart
-    Console.new.check_option if show_message_and_input(:restart) == AGREE_ANSWER
+  def ask_restart
+    @game.restart if show_message_and_input(:restart) == AGREE_ANSWER
     bye(EXIT)
   end
 
+  def save
+    @db.add_data_to_db(user) if show_message_and_input(:ask_save_to_db) == AGREE_ANSWER
+  end
+
   def check_lose
-    @user[:attempts_used] += 1
-    return if @user[:attempts_used] != @user[:attempts_total]
+    user[:attempts_used] += 1
+    return if user[:attempts_used] != user[:attempts_total]
 
     show_info(:lose)
-    restart
+    ask_restart
   end
 
   def check_hint
-    @user[:hints_used] != @user[:hints_total] ? show_hint : show_info(:used_all_hints)
+    user[:hints_used] != user[:hints_total] ? show_hint : show_info(:used_all_hints)
   end
 
   def show_rules
@@ -124,24 +124,12 @@ class Console
   end
 
   def show_stats
-    data = @db.load if @db.file_exist?
-    if data
-      sort_data = sort_db_info(data)
-      show_db_info(sort_data)
+    if @db.file_exist?
+      sort_data = @db.sort_db_info(@db.load)
+      @db.show_db_info(sort_data)
     else
       show_info(:clear_stats)
     end
   end
 
-  def sort_db_info(data)
-    data.sort_by { |user| [user[:attempts_total], user[:attempts_used], user[:hints_used]] }
-  end
-
-  def show_db_info(sort_data)
-    sort_data.each do |user|
-      user.each do |key, value|
-        puts "#{key}: #{value} #{"\n" if key == :hints_used} "
-      end
-    end
-  end
 end

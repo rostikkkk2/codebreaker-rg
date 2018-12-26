@@ -155,7 +155,7 @@ RSpec.describe Console do
     it 'show loose' do
       subject.instance_variable_set(:@user, attempts_used: 1, attempts_total: 2)
       expect(subject).to receive(:show_info)
-      expect(subject).to receive(:restart)
+      expect(subject).to receive(:ask_restart)
       subject.send(:check_lose)
     end
   end
@@ -176,14 +176,14 @@ RSpec.describe Console do
     it 'return restart' do
       allow(subject).to receive(:show_info)
       allow(subject).to receive(:save)
-      expect(subject).to receive(:restart)
+      expect(subject).to receive(:ask_restart)
       subject.send(:win)
     end
   end
 
   describe '#show_db_info' do
     it 'show message and input' do
-      subject.send(:show_db_info, test_user)
+      Storage.new.show_db_info(test_user)
     end
   end
 
@@ -203,7 +203,7 @@ RSpec.describe Console do
 
   describe '#show_stats' do
     it 'stats clear' do
-      allow_any_instance_of(Storage).to receive(:load).and_return(false)
+      allow_any_instance_of(Storage).to receive(:file_exist?).and_return(false)
       expect(subject).to receive(:show_info)
       subject.send(:show_stats)
     end
@@ -211,8 +211,8 @@ RSpec.describe Console do
     it 'show stats' do
       allow_any_instance_of(Storage).to receive(:file_exist?).and_return(true)
       allow_any_instance_of(Storage).to receive(:load).and_return(true)
-      expect(subject).to receive(:sort_db_info)
-      expect(subject).to receive(:show_db_info)
+      expect_any_instance_of(Storage).to receive(:sort_db_info)
+      expect_any_instance_of(Storage).to receive(:show_db_info)
       subject.send(:show_stats)
     end
   end
