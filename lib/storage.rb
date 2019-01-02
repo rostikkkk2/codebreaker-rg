@@ -12,12 +12,8 @@ class Storage
     write_to_db
   end
 
-  def show_db_info(sort_data)
-    sort_data.each do |user|
-      user.each do |key, value|
-        puts "#{key}: #{value} #{"\n" if key == :hints_used} "
-      end
-    end
+  def load_data_if_file_exists?
+    file_exist? ? sort_db_info(load) : false
   end
 
   def file_exist?

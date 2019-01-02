@@ -1,5 +1,6 @@
 en:
-  welcome_and_option: "Welcome to Codebreaker!
+  welcome: "Welcome to Codebreaker!"
+  choose_option: "
     \nChoose option one of several possible scenarios:
     \nstart, rules, stats, exit.\n "
   wrong_input_option: "You have passed unexpected command. Please choose one from listed commands\n "
@@ -27,15 +28,9 @@ en:
       If codebreaker inputs the exact number as a secret number\n
       - codebreaker wins the game. If all attempts are spent - codebreaker loses.\n
       Codebreaker also has some number of hints(depends on chosen difficulty).\n
-      If a user takes a hint - he receives back a separate digit of the secret code.\n
-      \nChoose option one of several possible scenarios:
-      \nstart, rules, stats, exit.\n "
+      If a user takes a hint - he receives back a separate digit of the secret code.\n "
   write_name: 'Enter your name'
-  message_choose_difficulty:
-    "\nChoose your difficulty:
-    \nEasy - 15 attempts. 2 hints
-    \nMedium - 10 attempts. 1 hint
-    \nHell - 5 attempts. 1 hint\n "
+  choose_difficulty: "\nChoose your difficulty: %{difficulties}\n "
   message_guess_code: "guess of secret code! You can take hint or exit\n "
   unexpected_command: 'Unexpected command'
   restart: 'Do you want to restart game?'

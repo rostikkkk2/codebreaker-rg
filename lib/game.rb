@@ -12,7 +12,11 @@ class Game
   end
 
   def valid_guess_code?(guess_code)
-    valid_value_in_range?(guess_code, MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && valid_length?(guess_code, LENGTH_GUESS_CODE)
+    validate_each_char_in_range?(guess_code.split(''), MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && valid_length?(guess_code, LENGTH_GUESS_CODE)
+  end
+
+  def hints_left_increase(user)
+    user[:hints_left] += 1
   end
 
   def give_digit_hint
@@ -31,10 +35,6 @@ class Game
     @result_signs
   end
 
-  def restart
-    return Console.new.check_option
-  end
-
   private
 
   def check_same_index(code_arr, double_secret_code, double_guess_code)
@@ -48,10 +48,10 @@ class Game
 
   def check_different_index(double_guess_code, double_secret_code)
     double_guess_code.each do |guess_digit|
-      if double_secret_code.include?(guess_digit)
-        double_secret_code[double_secret_code.find_index(guess_digit)] = nil
-        @result_signs += '-'
-      end
+      next unless double_secret_code.include?(guess_digit)
+
+      double_secret_code[double_secret_code.find_index(guess_digit)] = nil
+      @result_signs += '-'
     end
     p @secret_code
   end

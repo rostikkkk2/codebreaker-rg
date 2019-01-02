@@ -1,14 +1,14 @@
 module Validator
-  def validate_length_range?(value, begin_length, last_length)
-    value.length >= begin_length && value.length <= last_length
+  def validate_length_range?(value, length_range)
+    length_range.include?(value.length)
   end
 
-  def validate_string?(value)
-    value.is_a?(String)
+  def validate_class?(value, klass)
+    value.is_a?(klass)
   end
 
-  def valid_value_in_range?(value, first_range, last_range)
-    value.split('').each do |num|
+  def validate_each_char_in_range?(value, first_range, last_range)
+    value.each do |num|
       return false unless num.to_i.between?(first_range, last_range)
     end
   end

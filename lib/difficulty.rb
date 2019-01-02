@@ -1,18 +1,30 @@
 class Difficulty
-  EASY = { difficulty: 'Easy', attempts_total: 15, hints_total: 2 }.freeze
-  MEDIUM = { difficulty: 'Medium', attempts_total: 10, hints_total: 1 }.freeze
-  HELL = { difficulty: 'Hell', attempts_total: 5, hints_total: 1 }.freeze
+  attr_reader :difficulty_data
 
-  def initialize(difficulty)
-    @difficulty = difficulty
-    @info_difficulty = {}
+  DIFFICULTIES = {
+    easy: {
+      difficulty: 'Easy',
+      attempts_total: 15,
+      hints_total: 2
+    },
+    medium: {
+      difficulty: 'Medium',
+      attempts_total: 10,
+      hints_total: 1
+    },
+    hell: {
+      difficulty: 'Hell',
+      attempts_total: 5,
+      hints_total: 1
+    }
+  }.freeze
+
+  def initialize(difficulty = nil)
+    @difficulty = difficulty.downcase.to_sym if difficulty
+    @difficulty_data = DIFFICULTIES
   end
 
   def choose_difficulty
-    case @difficulty
-    when EASY[:difficulty] then @info_difficulty = { **EASY }
-    when MEDIUM[:difficulty] then @info_difficulty = { **MEDIUM }
-    when HELL[:difficulty] then @info_difficulty = { **HELL }
-    end
+    return DIFFICULTIES[@difficulty] if DIFFICULTIES.key?(@difficulty)
   end
 end
