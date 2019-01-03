@@ -53,7 +53,6 @@ class Game
       double_secret_code[double_secret_code.find_index(guess_digit)] = nil
       @result_signs += '-'
     end
-    p @secret_code
   end
 
   def generate_secrete_code
