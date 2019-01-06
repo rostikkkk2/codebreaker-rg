@@ -7,10 +7,8 @@ module Validator
     value.is_a?(klass)
   end
 
-  def validate_each_char_in_range?(value, first_range, last_range)
-    value.each do |num|
-      return false unless num.to_i.between?(first_range, last_range)
-    end
+  def validate_each_char_in_range?(value, length_range)
+    value.each { |num| return false unless length_range.include?(num.to_i) }
   end
 
   def valid_length?(value, length)

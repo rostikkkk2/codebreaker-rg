@@ -3,8 +3,7 @@ class Game
   attr_reader :secret_code, :secret_code_for_hints
 
   LENGTH_GUESS_CODE = 4
-  MIN_GUESS_DIGIT = 1
-  MAX_GUESS_DIGIT = 6
+  RANGE_GUESS_CODE = (1..6).freeze
 
   def initialize
     @secret_code = generate_secrete_code
@@ -12,11 +11,15 @@ class Game
   end
 
   def valid_guess_code?(guess_code)
-    validate_each_char_in_range?(guess_code.split(''), MIN_GUESS_DIGIT, MAX_GUESS_DIGIT) && valid_length?(guess_code, LENGTH_GUESS_CODE)
+    validate_each_char_in_range?(guess_code.split(''), RANGE_GUESS_CODE) && valid_length?(guess_code, LENGTH_GUESS_CODE)
   end
 
   def hints_left_increase(user)
     user[:hints_left] += 1
+  end
+
+  def attempts_left_increase(user)
+    user[:attempts_left] += 1
   end
 
   def give_digit_hint
@@ -56,6 +59,6 @@ class Game
   end
 
   def generate_secrete_code
-    Array.new(LENGTH_GUESS_CODE) { rand(MIN_GUESS_DIGIT..MAX_GUESS_DIGIT) }
+    Array.new(LENGTH_GUESS_CODE) { rand(RANGE_GUESS_CODE) }
   end
 end

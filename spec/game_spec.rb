@@ -1,5 +1,5 @@
 RSpec.describe Game do
-  let(:agree_command) { 'yes' }
+  AGREE_COMMAND = 'yes'.freeze
 
   describe '#compare_guess_and_secret_codes' do
     [
@@ -24,14 +24,6 @@ RSpec.describe Game do
         subject.instance_variable_set(:@secret_code, item[0])
         expect(subject.compare_guess_and_secret_codes(item[1])).to eq item[2]
       end
-    end
-  end
-
-  describe '#ask_restart' do
-    it 'go to restart' do
-      allow_any_instance_of(Console).to receive(:show_message_with_input).and_return(agree_command)
-      allow_any_instance_of(Console).to receive(:check_option)
-      Console.new.send(:ask_restart)
     end
   end
 end

@@ -7,13 +7,12 @@ class Storage
   end
 
   def add_data_to_db(user)
-    data = load if file_exist?
-    data ? @db_user = data.push(user) : @db_user.push(user)
+    file_exist? ? add_data_to_old_info(user) : @db_user.push(user)
     write_to_db
   end
 
-  def load_data_if_file_exists?
-    file_exist? ? sort_db_info(load) : false
+  def add_data_to_old_info(user)
+    @db_user = load.push(user)
   end
 
   def file_exist?

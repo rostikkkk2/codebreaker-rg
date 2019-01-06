@@ -1,6 +1,4 @@
 class Difficulty
-  attr_reader :difficulty_data
-
   DIFFICULTIES = {
     easy: {
       difficulty: 'Easy',
@@ -19,9 +17,8 @@ class Difficulty
     }
   }.freeze
 
-  def initialize(difficulty = nil)
+  def initialize(difficulty)
     @difficulty = difficulty.downcase.to_sym if difficulty
-    @difficulty_data = DIFFICULTIES
   end
 
   def choose_difficulty

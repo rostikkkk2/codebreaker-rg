@@ -10,6 +10,10 @@ class Console
     stats: 'Stats',
     exit: 'Exit'
   }.freeze
+  GAME_RESULTS = {
+    win: '++++',
+    lose: '----'
+  }.freeze
   NAME_DIFFICULTIES = %w[Easy Medium Hell].freeze
   COUNT_ATTEMPTS = 0
   COUNT_HINTS = 0
@@ -33,6 +37,12 @@ class Console
     end
   end
 
+  def show_message_with_input(message, key = nil)
+    show_info(message, key)
+    value = gets.chomp.capitalize
+    value == OPTIONS[:exit] ? bye : value
+  end
+
   private
 
   def registration
@@ -40,12 +50,6 @@ class Console
     @info_difficulty = ask_difficulty
     @user = { name: user_name, **@info_difficulty, attempts_left: COUNT_ATTEMPTS, hints_left: COUNT_HINTS }
     play_game
-  end
-
-  def show_message_with_input(message, key = nil)
-    show_info(message, key)
-    value = gets.chomp.capitalize
-    value == OPTIONS[:exit] ? bye : value
   end
 
   def ask_name
@@ -62,9 +66,9 @@ class Console
   end
 
   def ask_difficulty
-    @data = Difficulty.new.difficulty_data
     loop do
-      difficulty = show_message_with_input(:choose_difficulty, difficulties: @data.keys.join(', '))
+      difficulty = show_message_with_input(:choose_difficulty,
+                                           difficulties: Difficulty::DIFFICULTIES.keys.join(', '))
       break Difficulty.new(difficulty).choose_difficulty if NAME_DIFFICULTIES.include?(difficulty)
 
       show_info(:unexpected_command)
@@ -72,7 +76,7 @@ class Console
   end
 
   def play_game
-    @game = Game.new
+    @game ||= Game.new
     loop do
       guess_code = show_message_with_input(:message_guess_code)
       check_hint if guess_code == HINT
@@ -82,15 +86,10 @@ class Console
 
   def game_proccess(guess_code)
     puts @game.compare_guess_and_secret_codes(guess_code)
-    check_win(guess_code)
+    check_win_with_lose(guess_code)
   end
 
-  def show_hint
-    @game.hints_left_increase(user)
-    puts @game.give_digit_hint
-  end
-
-  def check_win(guess_code)
+  def check_win_with_lose(guess_code)
     guess_code == @game.secret_code.join ? win : check_lose
   end
 
@@ -100,8 +99,14 @@ class Console
     ask_restart
   end
 
+  def show_hint
+    @game.hints_left_increase(user)
+    puts @game.give_digit_hint
+  end
+
   def ask_restart
-    Console.new.check_option if show_message_with_input(:restart) == ANSWERS[:yes]
+    return check_option if show_message_with_input(:restart) == ANSWERS[:yes]
+
     bye
   end
 
@@ -110,15 +115,23 @@ class Console
   end
 
   def check_lose
-    user[:attempts_left] += 1
-    return if user[:attempts_left] != user[:attempts_total]
+    @game.attempts_left_increase(user)
+    return if attempts_left?
 
     show_info(:lose)
     ask_restart
   end
 
+  def attempts_left?
+    user[:attempts_left] != user[:attempts_total]
+  end
+
   def check_hint
-    user[:hints_left] != user[:hints_total] ? show_hint : show_info(:used_all_hints)
+    user[:hints_left] == user[:hints_total] ? show_info(:used_all_hints) : show_hint
+  end
+
+  def new_storage
+    @db = Storage.new
   end
 
   def show_rules
@@ -126,13 +139,12 @@ class Console
   end
 
   def show_stats
-    @db = Storage.new
-    data = @db.load_data_if_file_exists?
-    data ? show_db_info(data) : show_info(:clear_stats)
+    new_storage
+    @db.file_exist? ? show_db_info(@db.load) : show_info(:clear_stats)
   end
 
   def show_db_info(data)
-    data.each do |user|
+    @db.sort_db_info(data).each do |user|
       user.each do |key, value|
         puts "#{key}: #{value} #{"\n" if key == :hints_left} "
       end
